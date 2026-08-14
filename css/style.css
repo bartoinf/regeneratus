@@ -1,72 +1,95 @@
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f7f6;
-      color: #1f2937;
-    }
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f7f6;
+  color: #1f2937;
+  min-height: 100vh;
+}
 
-    header {
-      background: #0f766e;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
+header {
+  background: #0f766e;
+  color: white;
+  padding: 24px 20px;
+  text-align: center;
+}
 
-    header h1 {
-      font-size: 32px;
-    }
+header h1 {
+  font-size: 34px;
+  margin-bottom: 8px;
+}
 
-    header p {
-      margin-top: 8px;
-      font-size: 16px;
-    }
+header p {
+  font-size: 16px;
+  opacity: 0.95;
+}
 
-    main {
-      max-width: 900px;
-      margin: 60px auto;
-      padding: 20px;
-      text-align: center;
-    }
+main {
+  max-width: 1000px;
+  margin: 70px auto;
+  padding: 20px;
+}
 
-    .hero {
-      background: white;
-      padding: 50px 30px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
+.hero {
+  background: white;
+  padding: 70px 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+}
 
-    .hero h2 {
-      font-size: 36px;
-      margin-bottom: 20px;
-    }
+.hero h2 {
+  font-size: 42px;
+  margin-bottom: 20px;
+  color: #111827;
+}
 
-    .hero p {
-      font-size: 18px;
-      line-height: 1.6;
-      margin-bottom: 30px;
-    }
+.hero p {
+  max-width: 700px;
+  margin: 0 auto 35px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #4b5563;
+}
 
-    .button {
-      display: inline-block;
-      background: #0f766e;
-      color: white;
-      text-decoration: none;
-      padding: 14px 28px;
-      border-radius: 8px;
-      font-size: 16px;
-    }
+.button {
+  display: inline-block;
+  background: #0f766e;
+  color: white;
+  text-decoration: none;
+  padding: 15px 30px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: 0.2s ease;
+}
 
-    .button:hover {
-      background: #115e59;
-    }
+.button:hover {
+  background: #115e59;
+  transform: translateY(-2px);
+}
 
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #6b7280;
-    }
+footer {
+  text-align: center;
+  padding: 30px 20px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 50px 25px;
+  }
+
+  .hero h2 {
+    font-size: 32px;
+  }
+
+  .hero p {
+    font-size: 16px;
+  }
+}
