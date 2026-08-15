@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ferramentas | Regeneratus</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <header>
+    <h1>Regeneratus</h1>
+    <p>Ferramentas digitais para transformar ideias em resultados.</p>
+  </header>
+
+<main>
+  <section class="generator">
+    <h2>Gerador de Textos</h2>
+
+    <p>
+      Escolha o tipo de conteúdo que você deseja criar.
+    </p>
+
+    <label for="textType">Tipo de texto</label>
+
+    <select id="textType">
+      <option value="">Selecione uma opção</option>
+      <option value="produto">Descrição de produto</option>
+      <option value="anuncio">Anúncio</option>
+      <option value="social">Post para redes sociais</option>
+      <option value="email">E-mail profissional</option>
+    </select>
+
+    <label for="textTopic">Sobre o que é o texto?</label>
+
+    <textarea
+      id="textTopic"
+      rows="5"
+      placeholder="Digite aqui as informações principais..."
+    ></textarea>
+
+    <button class="button" id="generateButton">
+      Gerar texto
+    </button>
+
+    <div id="result" class="result">
+      <h3>Seu texto aparecerá aqui</h3>
+      <p>
+        Preencha os campos acima e clique em "Gerar texto".
+      </p>
+    </div>
+  </section>
+</main>
