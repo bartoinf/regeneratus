@@ -14,44 +14,50 @@ generateButton.addEventListener("click", function () {
   if (!type || !topic) {
     result.innerHTML = `
       <h3>Preencha os campos</h3>
-      <p>
-        Escolha o tipo de texto e informe sobre o que você deseja escrever.
-      </p>
+      <p>Escolha o tipo de texto e informe sobre o que você deseja escrever.</p>
     `;
     return;
   }
 
-  const toneText = {
-    profissional: "com linguagem profissional e objetiva",
-    amigavel: "com linguagem amigável e próxima",
-    persuasivo: "com linguagem persuasiva e orientada para ação",
-    criativo: "com linguagem criativa e envolvente"
+  const toneIntro = {
+    profissional: "clareza e confiança",
+    amigavel: "proximidade e naturalidade",
+    persuasivo: "uma comunicação envolvente e focada em benefícios",
+    criativo: "criatividade e personalidade"
   }[tone];
 
-  const lengthText = {
-    curto: "em uma versão curta e direta",
-    medio: "em uma versão equilibrada e completa",
-    longo: "em uma versão detalhada e completa"
+  const lengthMode = {
+    curto: "curto",
+    medio: "equilibrado",
+    longo: "detalhado"
   }[length];
 
   let generatedText = "";
 
   switch (type) {
     case "produto":
-      generatedText = `Descrição de produto sobre ${topic}, ${toneText}, ${lengthText}. Este produto foi pensado para oferecer praticidade, qualidade e uma experiência diferenciada ao cliente.`;
+      generatedText = `Conheça ${topic}. Uma solução pensada para quem valoriza ${toneIntro}. Com uma proposta prática e diferenciada, ${topic} pode ajudar você a alcançar melhores resultados no dia a dia. Descubra como essa solução pode fazer a diferença.`;
       break;
 
     case "anuncio":
-      generatedText = `Anúncio sobre ${topic}, ${toneText}, ${lengthText}. Conheça uma solução criada para quem busca qualidade, praticidade e resultados. Aproveite esta oportunidade e descubra tudo o que ela pode oferecer.`;
+      generatedText = `✨ Descubra ${topic}! Se você procura uma solução que combine praticidade, qualidade e ${toneIntro}, esta pode ser a oportunidade que estava procurando. Conheça agora e veja tudo o que ${topic} pode oferecer.`;
       break;
 
     case "social":
-      generatedText = `Post para redes sociais sobre ${topic}, ${toneText}, ${lengthText}. ✨ Descubra uma solução pensada para tornar sua experiência mais simples, prática e eficiente. Conheça e compartilhe essa novidade!`;
+      generatedText = `✨ Conheça ${topic}! Uma solução criada para quem busca praticidade, qualidade e ${toneIntro}. Se você acredita que boas ideias podem transformar resultados, vale a pena conhecer. Experimente, descubra e compartilhe!`;
       break;
 
     case "email":
-      generatedText = `Olá,\n\nGostaria de apresentar uma oportunidade relacionada a ${topic}. Este conteúdo foi preparado ${toneText} e ${lengthText}, destacando os principais benefícios e possibilidades.\n\nSe fizer sentido para você, podemos conversar melhor sobre essa oportunidade.\n\nAtenciosamente,\nEquipe Regeneratus`;
+      generatedText = `Olá,\n\nGostaria de apresentar ${topic}, uma solução desenvolvida para quem busca praticidade, qualidade e ${toneIntro}.\n\nA proposta é oferecer uma experiência simples e útil, ajudando você a transformar uma necessidade em uma oportunidade de resultado.\n\nSe este assunto fizer sentido para você, podemos conversar melhor e apresentar os próximos detalhes.\n\nAtenciosamente,\nEquipe Regeneratus`;
       break;
+  }
+
+  if (lengthMode === "curto") {
+    generatedText = generatedText.split(" ").slice(0, 45).join(" ").replace(/[,.!?]$/, "") + ".";
+  }
+
+  if (lengthMode === "detalhado") {
+    generatedText += "\n\nMais do que uma ferramenta, a proposta é criar uma experiência que una simplicidade, utilidade e resultados reais para quem utiliza a solução.";
   }
 
   result.innerHTML = `
