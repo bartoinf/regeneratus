@@ -14,49 +14,66 @@
     <p>Ferramentas digitais para transformar ideias em resultados.</p>
   </header>
 
-<main>
-  <section class="generator">
-    <h2>Gerador de Textos</h2>
+  <main>
+    <section class="generator">
+      <h2>Gerador de Textos</h2>
 
-    <p>
-      Escolha o tipo de conteúdo que você deseja criar.
-    </p>
-
-    <label for="textType">Tipo de texto</label>
-
-    <select id="textType">
-      <option value="">Selecione uma opção</option>
-      <option value="produto">Descrição de produto</option>
-      <option value="anuncio">Anúncio</option>
-      <option value="social">Post para redes sociais</option>
-      <option value="email">E-mail profissional</option>
-    </select>
-
-    <label for="textTopic">Sobre o que é o texto?</label>
-
-    <textarea
-      id="textTopic"
-      rows="5"
-      placeholder="Digite aqui as informações principais..."
-    ></textarea>
-
-    <button class="button" id="generateButton">
-      Gerar texto
-    </button>
-
-    <div id="result" class="result">
-      <h3>Seu texto aparecerá aqui</h3>
       <p>
-        Preencha os campos acima e clique em "Gerar texto".
+        Configure seu conteúdo e gere uma primeira versão em poucos segundos.
       </p>
-    </div>
-  </section>
-</main>
+
+      <label for="textType">Tipo de texto</label>
+
+      <select id="textType">
+        <option value="">Selecione uma opção</option>
+        <option value="produto">Descrição de produto</option>
+        <option value="anuncio">Anúncio</option>
+        <option value="social">Post para redes sociais</option>
+        <option value="email">E-mail profissional</option>
+      </select>
+
+      <label for="textTone">Tom de voz</label>
+
+      <select id="textTone">
+        <option value="profissional">Profissional</option>
+        <option value="amigavel">Amigável</option>
+        <option value="persuasivo">Persuasivo</option>
+        <option value="criativo">Criativo</option>
+      </select>
+
+      <label for="textLength">Tamanho do texto</label>
+
+      <select id="textLength">
+        <option value="curto">Curto</option>
+        <option value="medio" selected>Médio</option>
+        <option value="longo">Longo</option>
+      </select>
+
+      <label for="textTopic">Sobre o que é o texto?</label>
+
+      <textarea
+        id="textTopic"
+        rows="5"
+        placeholder="Ex.: um relógio inteligente para pessoas que praticam esportes..."
+      ></textarea>
+
+      <button class="button" id="generateButton" type="button">
+        Gerar texto
+      </button>
+
+      <div id="result" class="result">
+        <h3>Seu texto aparecerá aqui</h3>
+        <p>
+          Preencha os campos acima e clique em "Gerar texto".
+        </p>
+      </div>
+    </section>
+  </main>
 
   <footer>
     © 2026 Regeneratus. Todos os direitos reservados.
   </footer>
-  
+
   <script src="js/app.js"></script>
 </body>
 </html>
