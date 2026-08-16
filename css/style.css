@@ -80,20 +80,6 @@ footer {
   font-size: 14px;
 }
 
-@media (max-width: 600px) {
-  .hero {
-    padding: 50px 25px;
-  }
-
-  .hero h2 {
-    font-size: 32px;
-  }
-
-  .hero p {
-    font-size: 16px;
-  }
-}
-
 .tools {
   margin-top: 70px;
   text-align: center;
@@ -179,13 +165,16 @@ footer {
 .generator textarea:focus {
   outline: none;
   border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
 }
 
 .generator textarea {
   resize: vertical;
+  min-height: 130px;
 }
 
 .generator .button {
+  width: 100%;
   border: none;
   cursor: pointer;
   margin-top: 25px;
@@ -210,6 +199,18 @@ footer {
 }
 
 @media (max-width: 600px) {
+  .hero {
+    padding: 50px 25px;
+  }
+
+  .hero h2 {
+    font-size: 32px;
+  }
+
+  .hero p {
+    font-size: 16px;
+  }
+
   .generator {
     padding: 30px 20px;
     margin: 40px auto;
