@@ -5,63 +5,63 @@ const textLength = document.getElementById("textLength");
 const textTopic = document.getElementById("textTopic");
 const result = document.getElementById("result");
 
-generateButton.addEventListener("click", function () {
+generateButton.addEventListener("click", async function () {
   const type = textType.value;
   const tone = textTone.value;
   const length = textLength.value;
   const topic = textTopic.value.trim();
 
-  if (!type || !topic) {
+  if (!type || !tone || !length || !topic) {
     result.innerHTML = `
       <h3>Preencha os campos</h3>
-      <p>Escolha o tipo de texto e informe sobre o que você deseja escrever.</p>
+      <p>Escolha o tipo, o tom, o tamanho e informe sobre o que você deseja escrever.</p>
     `;
     return;
   }
 
-  const toneIntro = {
-    profissional: "clareza e confiança",
-    amigavel: "proximidade e naturalidade",
-    persuasivo: "uma comunicação envolvente e focada em benefícios",
-    criativo: "criatividade e personalidade"
-  }[tone];
-
-  const lengthMode = {
-    curto: "curto",
-    medio: "equilibrado",
-    longo: "detalhado"
-  }[length];
-
-  let generatedText = "";
-
-  switch (type) {
-    case "produto":
-      generatedText = `Conheça ${topic}. Uma solução pensada para quem valoriza ${toneIntro}. Com uma proposta prática e diferenciada, ${topic} pode ajudar você a alcançar melhores resultados no dia a dia. Descubra como essa solução pode fazer a diferença.`;
-      break;
-
-    case "anuncio":
-      generatedText = `✨ Descubra ${topic}! Se você procura uma solução que combine praticidade, qualidade e ${toneIntro}, esta pode ser a oportunidade que estava procurando. Conheça agora e veja tudo o que ${topic} pode oferecer.`;
-      break;
-
-    case "social":
-      generatedText = `✨ Conheça ${topic}! Uma solução criada para quem busca praticidade, qualidade e ${toneIntro}. Se você acredita que boas ideias podem transformar resultados, vale a pena conhecer. Experimente, descubra e compartilhe!`;
-      break;
-
-    case "email":
-      generatedText = `Olá,\n\nGostaria de apresentar ${topic}, uma solução desenvolvida para quem busca praticidade, qualidade e ${toneIntro}.\n\nA proposta é oferecer uma experiência simples e útil, ajudando você a transformar uma necessidade em uma oportunidade de resultado.\n\nSe este assunto fizer sentido para você, podemos conversar melhor e apresentar os próximos detalhes.\n\nAtenciosamente,\nEquipe Regeneratus`;
-      break;
-  }
-
-  if (lengthMode === "curto") {
-    generatedText = generatedText.split(" ").slice(0, 45).join(" ").replace(/[,.!?]$/, "") + ".";
-  }
-
-  if (lengthMode === "detalhado") {
-    generatedText += "\n\nMais do que uma ferramenta, a proposta é criar uma experiência que una simplicidade, utilidade e resultados reais para quem utiliza a solução.";
-  }
+  generateButton.disabled = true;
+  generateButton.textContent = "Enviando...";
 
   result.innerHTML = `
-    <h3>Texto gerado</h3>
-    <p>${generatedText.replace(/\n/g, "<br>")}</p>
+    <h3>Conectando ao Regeneratus...</h3>
+    <p>Estamos enviando suas escolhas para o backend.</p>
   `;
+
+  try {
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        type,
+        tone,
+        length,
+        topic
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Não foi possível processar a solicitação.");
+    }
+
+    result.innerHTML = `
+      <h3>Backend conectado</h3>
+      <p>Os dados foram enviados com sucesso para a API do Regeneratus.</p>
+      <p><strong>Tipo:</strong> ${data.received.type}</p>
+      <p><strong>Tom:</strong> ${data.received.tone}</p>
+      <p><strong>Tamanho:</strong> ${data.received.length}</p>
+      <p><strong>Tema:</strong> ${data.received.topic}</p>
+    `;
+  } catch (error) {
+    result.innerHTML = `
+      <h3>Não foi possível conectar</h3>
+      <p>${error.message}</p>
+    `;
+  } finally {
+    generateButton.disabled = false;
+    generateButton.textContent = "Gerar texto";
+  }
 });
