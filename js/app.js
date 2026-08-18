@@ -20,11 +20,11 @@ generateButton.addEventListener("click", async function () {
   }
 
   generateButton.disabled = true;
-  generateButton.textContent = "Enviando...";
+  generateButton.textContent = "Gerando...";
 
   result.innerHTML = `
-    <h3>Conectando ao Regeneratus...</h3>
-    <p>Estamos enviando suas escolhas para o backend.</p>
+    <h3>Gerando seu texto...</h3>
+    <p>O Regeneratus está consultando a inteligência artificial.</p>
   `;
 
   try {
@@ -33,31 +33,29 @@ generateButton.addEventListener("click", async function () {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        type,
-        tone,
-        length,
-        topic
-      })
+      body: JSON.stringify({ type, tone, length, topic })
     });
 
-    const data = await response.json();
+    const rawBody = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(rawBody);
+    } catch (parseError) {
+      throw new Error(`O servidor retornou uma resposta inesperada (${response.status}).`);
+    }
 
     if (!response.ok) {
-      throw new Error(data.error || "Não foi possível processar a solicitação.");
+      throw new Error(data.error || "Não foi possível gerar o texto.");
     }
 
     result.innerHTML = `
-      <h3>Backend conectado</h3>
-      <p>Os dados foram enviados com sucesso para a API do Regeneratus.</p>
-      <p><strong>Tipo:</strong> ${data.received.type}</p>
-      <p><strong>Tom:</strong> ${data.received.tone}</p>
-      <p><strong>Tamanho:</strong> ${data.received.length}</p>
-      <p><strong>Tema:</strong> ${data.received.topic}</p>
+      <h3>Texto gerado</h3>
+      <p>${data.text}</p>
     `;
   } catch (error) {
     result.innerHTML = `
-      <h3>Não foi possível conectar</h3>
+      <h3>Não foi possível gerar o texto</h3>
       <p>${error.message}</p>
     `;
   } finally {
