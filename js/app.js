@@ -5,6 +5,49 @@ const textLength = document.getElementById("textLength");
 const textTopic = document.getElementById("textTopic");
 const result = document.getElementById("result");
 
+let lastGeneratedText = "";
+
+function showMessage(title, message) {
+  result.innerHTML = `
+    <div class="result-card">
+      <h3>${title}</h3>
+      <p>${message}</p>
+    </div>
+  `;
+}
+
+function showGeneratedText(text) {
+  lastGeneratedText = text;
+
+  result.innerHTML = `
+    <div class="result-card">
+      <h3>Texto gerado</h3>
+      <div class="generated-text">${text}</div>
+      <div class="result-actions">
+        <button type="button" id="copyButton" class="button secondary-button">Copiar texto</button>
+        <button type="button" id="newTextButton" class="button">Novo texto</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("copyButton").addEventListener("click", async function () {
+    try {
+      await navigator.clipboard.writeText(lastGeneratedText);
+      this.textContent = "Texto copiado!";
+      setTimeout(() => {
+        this.textContent = "Copiar texto";
+      }, 1800);
+    } catch (error) {
+      showMessage("Não foi possível copiar", "Selecione o texto manualmente e copie para a área de transferência.");
+    }
+  });
+
+  document.getElementById("newTextButton").addEventListener("click", function () {
+    textTopic.focus();
+    textTopic.select();
+  });
+}
+
 generateButton.addEventListener("click", async function () {
   const type = textType.value;
   const tone = textTone.value;
@@ -12,20 +55,20 @@ generateButton.addEventListener("click", async function () {
   const topic = textTopic.value.trim();
 
   if (!type || !tone || !length || !topic) {
-    result.innerHTML = `
-      <h3>Preencha os campos</h3>
-      <p>Escolha o tipo, o tom, o tamanho e informe sobre o que você deseja escrever.</p>
-    `;
+    showMessage(
+      "Preencha os campos",
+      "Escolha o tipo, o tom, o tamanho e informe sobre o que você deseja escrever."
+    );
     return;
   }
 
   generateButton.disabled = true;
   generateButton.textContent = "Gerando...";
 
-  result.innerHTML = `
-    <h3>Gerando seu texto...</h3>
-    <p>O Regeneratus está consultando a inteligência artificial.</p>
-  `;
+  showMessage(
+    "Gerando seu texto...",
+    "O Regeneratus está preparando sua solicitação."
+  );
 
   try {
     const response = await fetch("/api/generate", {
@@ -49,15 +92,9 @@ generateButton.addEventListener("click", async function () {
       throw new Error(data.error || "Não foi possível gerar o texto.");
     }
 
-    result.innerHTML = `
-      <h3>Texto gerado</h3>
-      <p>${data.text}</p>
-    `;
+    showGeneratedText(data.text);
   } catch (error) {
-    result.innerHTML = `
-      <h3>Não foi possível gerar o texto</h3>
-      <p>${error.message}</p>
-    `;
+    showMessage("Não foi possível gerar o texto", error.message);
   } finally {
     generateButton.disabled = false;
     generateButton.textContent = "Gerar texto";
