@@ -1,5 +1,5 @@
 // Backend endpoint for the Regeneratus text generator.
-// This first version validates the browser-to-backend communication.
+// The API key is kept on Vercel as OPENAI_API_KEY and is never exposed to the browser.
 
 export default async function handler(request, response) {
   if (request.method !== "POST") {
@@ -17,16 +17,52 @@ export default async function handler(request, response) {
       });
     }
 
+    if (!process.env.OPENAI_API_KEY) {
+      return response.status(500).json({
+        error: "A chave da API não está configurada no servidor."
+      });
+    }
+
+    const prompt = `Você é o gerador de textos da plataforma Regeneratus.\n\nCrie um texto original em português do Brasil.\nTipo: ${type}\nTom de voz: ${tone}\nTamanho: ${length}\nTema: ${topic}\n\nRegras:\n- Entregue somente o texto final, sem explicar as instruções.\n- Não mencione tipo, tom ou tamanho no texto.\n- Não use títulos como \"Texto gerado\".\n- Adapte o vocabulário e a estrutura ao tipo de conteúdo solicitado.\n- O texto deve soar natural, claro e pronto para uso.\n`;
+
+    const openAIResponse = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-5.4-nano",
+        reasoning: { effort: "none" },
+        input: prompt,
+        max_output_tokens: 500
+      })
+    });
+
+    const data = await openAIResponse.json();
+
+    if (!openAIResponse.ok) {
+      console.error("OpenAI API error:", data);
+      return response.status(openAIResponse.status).json({
+        error: "A IA não conseguiu gerar o texto neste momento."
+      });
+    }
+
+    const generatedText = data.output_text?.trim();
+
+    if (!generatedText) {
+      return response.status(502).json({
+        error: "A IA não retornou um texto válido."
+      });
+    }
+
     return response.status(200).json({
       success: true,
-      received: {
-        type,
-        tone,
-        length,
-        topic
-      }
+      text: generatedText
     });
   } catch (error) {
+    console.error("Regeneratus API error:", error);
+
     return response.status(500).json({
       error: "Não foi possível processar a solicitação."
     });
