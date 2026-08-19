@@ -5,7 +5,28 @@ const textLength = document.getElementById("textLength");
 const textTopic = document.getElementById("textTopic");
 const result = document.getElementById("result");
 
+const HISTORY_KEY = "regeneratus_text_history";
 let lastGeneratedText = "";
+
+function getHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveToHistory(text) {
+  const history = getHistory();
+  history.unshift({
+    text,
+    topic: textTopic.value.trim(),
+    type: textType.value,
+    createdAt: new Date().toLocaleString("pt-BR")
+  });
+
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 10)));
+}
 
 function showMessage(title, message) {
   result.innerHTML = `
@@ -18,6 +39,7 @@ function showMessage(title, message) {
 
 function showGeneratedText(text) {
   lastGeneratedText = text;
+  saveToHistory(text);
 
   result.innerHTML = `
     <div class="result-card">
@@ -45,6 +67,84 @@ function showGeneratedText(text) {
   document.getElementById("newTextButton").addEventListener("click", function () {
     textTopic.focus();
     textTopic.select();
+  });
+
+  renderHistory();
+}
+
+function renderHistory() {
+  const history = getHistory();
+  let historyContainer = document.getElementById("history");
+
+  if (!historyContainer) {
+    historyContainer = document.createElement("section");
+    historyContainer.id = "history";
+    historyContainer.className = "history";
+    result.parentNode.appendChild(historyContainer);
+  }
+
+  if (!history.length) {
+    historyContainer.innerHTML = "";
+    return;
+  }
+
+  historyContainer.innerHTML = `
+    <div class="history-header">
+      <div>
+        <h3>Histórico</h3>
+        <p>Seus últimos textos ficam salvos neste navegador.</p>
+      </div>
+      <button type="button" id="clearHistoryButton" class="history-clear">Limpar histórico</button>
+    </div>
+    <div class="history-list">
+      ${history.map((item, index) => `
+        <article class="history-item">
+          <div class="history-item-info">
+            <strong>${item.topic}</strong>
+            <small>${item.createdAt}</small>
+          </div>
+          <p>${item.text}</p>
+          <div class="history-actions">
+            <button type="button" class="history-copy" data-index="${index}">Copiar</button>
+            <button type="button" class="history-use" data-index="${index}">Usar novamente</button>
+          </div>
+        </article>
+      `).join("")}
+    </div>
+  `;
+
+  document.querySelectorAll(".history-copy").forEach(button => {
+    button.addEventListener("click", async function () {
+      const item = getHistory()[Number(this.dataset.index)];
+      if (!item) return;
+
+      try {
+        await navigator.clipboard.writeText(item.text);
+        this.textContent = "Copiado!";
+        setTimeout(() => {
+          this.textContent = "Copiar";
+        }, 1500);
+      } catch (error) {
+        alert("Não foi possível copiar o texto.");
+      }
+    });
+  });
+
+  document.querySelectorAll(".history-use").forEach(button => {
+    button.addEventListener("click", function () {
+      const item = getHistory()[Number(this.dataset.index)];
+      if (!item) return;
+      textTopic.value = item.topic;
+      textTopic.focus();
+      textTopic.select();
+    });
+  });
+
+  document.getElementById("clearHistoryButton").addEventListener("click", function () {
+    if (confirm("Deseja realmente apagar todo o histórico?")) {
+      localStorage.removeItem(HISTORY_KEY);
+      renderHistory();
+    }
   });
 }
 
@@ -114,3 +214,5 @@ generateButton.addEventListener("click", async function () {
     generateButton.textContent = "Gerar texto";
   }
 });
+
+renderHistory();
