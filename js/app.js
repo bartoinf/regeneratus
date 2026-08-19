@@ -48,6 +48,10 @@ function showGeneratedText(text) {
   });
 }
 
+function generateDemoText(type, tone, length, topic) {
+  return `✨ Exemplo de texto do Regeneratus sobre ${topic}. Uma solução pensada para transformar ideias em resultados, com uma comunicação ${tone} e adequada ao formato ${type}. Este é um texto de demonstração para testarmos a experiência da ferramenta enquanto a geração por IA permanece desativada. Tamanho selecionado: ${length}.`;
+}
+
 generateButton.addEventListener("click", async function () {
   const type = textType.value;
   const tone = textTone.value;
@@ -71,6 +75,16 @@ generateButton.addEventListener("click", async function () {
   );
 
   try {
+    // Modo local de demonstração: não chama a API nem gera custos.
+    // Para a geração real, basta trocar DEMO_MODE para false.
+    const DEMO_MODE = true;
+
+    if (DEMO_MODE) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      showGeneratedText(generateDemoText(type, tone, length, topic));
+      return;
+    }
+
     const response = await fetch("/api/generate", {
       method: "POST",
       headers: {
