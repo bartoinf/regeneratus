@@ -12,34 +12,23 @@ let lastGeneratedText = "";
 function getHistory() {
   try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch (error) { return []; }
 }
-
 function getFavorites() {
   try { return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []; } catch (error) { return []; }
 }
-
 function saveToHistory(text) {
   const history = getHistory();
   history.unshift({ text, topic: textTopic.value.trim(), type: textType.value, createdAt: new Date().toLocaleString("pt-BR") });
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 10)));
 }
-
-function isFavorite(text) {
-  return getFavorites().some(item => item.text === text);
-}
-
+function isFavorite(text) { return getFavorites().some(item => item.text === text); }
 function toggleFavorite(item) {
   let favorites = getFavorites();
   const index = favorites.findIndex(favorite => favorite.text === item.text);
-  if (index >= 0) favorites.splice(index, 1);
-  else favorites.unshift(item);
+  if (index >= 0) favorites.splice(index, 1); else favorites.unshift(item);
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites.slice(0, 20)));
-  renderHistory();
-  renderFavorites();
+  renderHistory(); renderFavorites();
 }
-
-function showMessage(title, message) {
-  result.innerHTML = `<div class="result-card"><h3>${title}</h3><p>${message}</p></div>`;
-}
+function showMessage(title, message) { result.innerHTML = `<div class="result-card"><h3>${title}</h3><p>${message}</p></div>`; }
 
 function showGeneratedText(text) {
   lastGeneratedText = text;
@@ -48,22 +37,45 @@ function showGeneratedText(text) {
   result.innerHTML = `
     <div class="result-card">
       <h3>Texto gerado</h3>
-      <div class="generated-text">${text}</div>
+      <textarea id="editableText" class="generated-text editable-text" aria-label="Editar texto gerado">${text}</textarea>
+      <p class="edit-hint">Você pode editar o texto antes de copiar ou favoritar.</p>
       <div class="result-actions">
+        <button type="button" id="saveEditButton" class="button">Salvar edição</button>
         <button type="button" id="copyButton" class="button secondary-button">Copiar texto</button>
         <button type="button" id="favoriteButton" class="button secondary-button">${isFavorite(text) ? "★ Favoritado" : "☆ Favoritar"}</button>
         <button type="button" id="newTextButton" class="button">Novo texto</button>
       </div>
     </div>`;
 
+  const editableText = document.getElementById("editableText");
+  document.getElementById("saveEditButton").addEventListener("click", function () {
+    const editedText = editableText.value.trim();
+    if (!editedText) { showMessage("Texto vazio", "Escreva algum conteúdo antes de salvar a edição."); return; }
+    lastGeneratedText = editedText;
+    item.text = editedText;
+    let history = getHistory();
+    const historyIndex = history.findIndex(entry => entry.text === text && entry.topic === item.topic);
+    if (historyIndex >= 0) { history[historyIndex] = item; localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); }
+    const favoriteIndex = getFavorites().findIndex(entry => entry.text === text);
+    if (favoriteIndex >= 0) { const favorites = getFavorites(); favorites[favoriteIndex] = item; localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites)); }
+    this.textContent = "Edição salva!";
+    setTimeout(() => this.textContent = "Salvar edição", 1800);
+    renderHistory(); renderFavorites();
+  });
+
   document.getElementById("copyButton").addEventListener("click", async function () {
-    try { await navigator.clipboard.writeText(lastGeneratedText); this.textContent = "Texto copiado!"; setTimeout(() => this.textContent = "Copiar texto", 1800); }
+    const textToCopy = editableText.value.trim();
+    if (!textToCopy) return;
+    try { await navigator.clipboard.writeText(textToCopy); this.textContent = "Texto copiado!"; setTimeout(() => this.textContent = "Copiar texto", 1800); }
     catch (error) { showMessage("Não foi possível copiar", "Selecione o texto manualmente e copie para a área de transferência."); }
   });
-  document.getElementById("favoriteButton").addEventListener("click", () => toggleFavorite(item));
+  document.getElementById("favoriteButton").addEventListener("click", () => {
+    const editedText = editableText.value.trim();
+    if (!editedText) return;
+    toggleFavorite({ ...item, text: editedText });
+  });
   document.getElementById("newTextButton").addEventListener("click", () => { textTopic.focus(); textTopic.select(); });
-  renderHistory();
-  renderFavorites();
+  renderHistory(); renderFavorites();
 }
 
 function renderHistory() {
