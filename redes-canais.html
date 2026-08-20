@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regeneratus — Redes e Canais</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <section class="tool-card">
+      <h1>Conteúdo para Redes e Canais</h1>
+      <p class="tool-description">Crie uma ideia e adapte a comunicação para diferentes canais.</p>
+
+      <div class="form-group">
+        <label for="channel">Canal</label>
+        <select id="channel">
+          <option value="todos">Todos os canais</option>
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="x">X/Twitter</option>
+          <option value="tiktok">TikTok</option>
+          <option value="whatsapp">WhatsApp</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="objective">Objetivo</label>
+        <select id="objective">
+          <option value="divulgação">Divulgação</option>
+          <option value="venda">Venda</option>
+          <option value="engajamento">Engajamento</option>
+          <option value="informação">Informação</option>
+          <option value="atendimento">Atendimento</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="tone">Tom</label>
+        <select id="tone">
+          <option value="profissional">Profissional</option>
+          <option value="persuasivo">Persuasivo</option>
+          <option value="descontraído">Descontraído</option>
+          <option value="institucional">Institucional</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="topic">Tema</label>
+        <textarea id="topic" rows="5" placeholder="Ex.: lançamento de uma nova ferramenta digital para pequenos negócios"></textarea>
+      </div>
+
+      <button type="button" id="generateContent" class="button">Gerar conteúdo</button>
+      <div id="contentResult" class="result"></div>
+    </section>
+  </main>
+  <script src="js/redes-canais.js"></script>
+</body>
+</html>
