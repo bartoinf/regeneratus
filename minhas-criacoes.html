@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas Criações | Regeneratus</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="site-nav">
+      <a class="brand" href="index.html">Regeneratus</a>
+      <nav aria-label="Navegação principal">
+        <a href="index.html">Início</a>
+        <a href="index.html#ferramentas">Ferramentas</a>
+        <a href="ferramentas.html">Gerador de Textos</a>
+        <a href="redes-canais.html">Redes e Canais</a>
+        <a href="minhas-criacoes.html" aria-current="page">Minhas Criações</a>
+      </nav>
+    </div>
+    <p>Ferramentas digitais para transformar ideias em resultados.</p>
+  </header>
+
+  <main>
+    <section class="generator creations-panel">
+      <div class="panel-heading">
+        <span class="hero-badge">Seu espaço</span>
+        <h2>Minhas Criações</h2>
+        <p>Reúna aqui os conteúdos que você criou, editou e guardou como favorito.</p>
+      </div>
+
+      <div class="creation-tabs" role="tablist" aria-label="Conteúdos salvos">
+        <button type="button" class="creation-tab active" data-tab="recentes">Recentes</button>
+        <button type="button" class="creation-tab" data-tab="favoritos">Favoritos</button>
+      </div>
+
+      <div id="creationsContent" class="creations-content"></div>
+    </section>
+  </main>
+
+  <footer>© 2026 Regeneratus. Todos os direitos reservados.</footer>
+  <script src="js/minhas-criacoes.js"></script>
+</body>
+</html>
