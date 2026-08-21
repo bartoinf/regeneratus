@@ -5,6 +5,7 @@ const topic = document.getElementById("topic");
 const generateContent = document.getElementById("generateContent");
 const contentResult = document.getElementById("contentResult");
 
+const HISTORY_KEY = "regeneratus_channels_history";
 const channelNames = { instagram: "Instagram", facebook: "Facebook", linkedin: "LinkedIn", x: "X/Twitter", tiktok: "TikTok", whatsapp: "WhatsApp" };
 const demoFormats = {
   instagram: topic => `Legenda para Instagram: ${topic}. Uma oportunidade para quem busca resultados com uma comunicação ${tone.value}. Objetivo: ${objective.value}. ✨ Descubra, compartilhe e participe.`,
@@ -15,17 +16,30 @@ const demoFormats = {
   whatsapp: topic => `Mensagem para WhatsApp: Olá! Gostaria de compartilhar uma novidade: ${topic}. A ideia é ajudar você de forma prática, com uma comunicação ${tone.value} e foco em ${objective.value}. Se fizer sentido para você, posso te mostrar mais.`
 };
 
+function getHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch (error) { return []; } }
+function saveHistory(items) { localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(0, 10))); }
 function escapeHtml(value) { const div = document.createElement("div"); div.textContent = value; return div.innerHTML; }
 
-function renderChannelCard(key, text) {
-  return `<article class="result-card channel-result" data-channel="${key}"><h3>${channelNames[key]}</h3><textarea class="generated-text editable-channel" data-channel="${key}" aria-label="Editar conteúdo para ${channelNames[key]}">${escapeHtml(text)}</textarea><div class="result-actions"><button type="button" class="button save-channel" data-channel="${key}">Salvar edição</button><button type="button" class="button secondary-button copy-channel" data-channel="${key}">Copiar</button></div><p class="edit-hint">Edite esta versão sem alterar os outros canais.</p></article>`;
+function addToHistory(channels) {
+  const history = getHistory();
+  history.unshift({ id: Date.now(), topic: topic.value.trim(), objective: objective.value, tone: tone.value, createdAt: new Date().toLocaleString("pt-BR"), channels });
+  saveHistory(history);
+}
+
+function renderChannelCard(key, text, historyId = null) {
+  return `<article class="result-card channel-result" data-channel="${key}" data-history-id="${historyId || ""}"><h3>${channelNames[key]}</h3><textarea class="generated-text editable-channel" data-channel="${key}" aria-label="Editar conteúdo para ${channelNames[key]}">${escapeHtml(text)}</textarea><div class="result-actions"><button type="button" class="button save-channel" data-channel="${key}">Salvar edição</button><button type="button" class="button secondary-button copy-channel" data-channel="${key}">Copiar</button></div><p class="edit-hint">Edite esta versão sem alterar os outros canais.</p></article>`;
 }
 
 function bindChannelActions() {
   document.querySelectorAll(".save-channel").forEach(button => button.addEventListener("click", function () {
     const key = this.dataset.channel;
     const textarea = document.querySelector(`.editable-channel[data-channel="${key}"]`);
+    const card = this.closest(".channel-result");
     if (!textarea || !textarea.value.trim()) return;
+    const historyId = Number(card.dataset.historyId);
+    const history = getHistory();
+    const entry = history.find(item => item.id === historyId);
+    if (entry && entry.channels[key]) { entry.channels[key] = textarea.value.trim(); saveHistory(history); }
     this.textContent = "Edição salva!";
     setTimeout(() => this.textContent = "Salvar edição", 1800);
   }));
@@ -33,9 +47,26 @@ function bindChannelActions() {
     const key = this.dataset.channel;
     const textarea = document.querySelector(`.editable-channel[data-channel="${key}"]`);
     if (!textarea) return;
-    try { await navigator.clipboard.writeText(textarea.value); this.textContent = "Copiado!"; setTimeout(() => this.textContent = "Copiar", 1500); }
-    catch (error) { alert("Não foi possível copiar o conteúdo."); }
+    try { await navigator.clipboard.writeText(textarea.value); this.textContent = "Copiado!"; setTimeout(() => this.textContent = "Copiar", 1500); } catch (error) { alert("Não foi possível copiar o conteúdo."); }
   }));
+}
+
+function renderHistory() {
+  const history = getHistory();
+  let container = document.getElementById("channelHistory");
+  if (!container) { container = document.createElement("section"); container.id = "channelHistory"; container.className = "history"; contentResult.parentNode.appendChild(container); }
+  if (!history.length) { container.innerHTML = ""; return; }
+  container.innerHTML = `<div class="history-header"><div><h3>Histórico de conteúdos</h3><p>Últimas gerações salvas neste navegador.</p></div><button type="button" id="clearChannelHistory" class="history-clear">Limpar histórico</button></div><div class="history-list">${history.map((item, index) => `<article class="history-item"><div class="history-item-info"><strong>${escapeHtml(item.topic)}</strong><small>${item.createdAt} · ${item.objective}</small></div><p>${Object.entries(item.channels).map(([key, text]) => `<strong>${channelNames[key]}:</strong> ${escapeHtml(text)}`).join("<br>")}</p><div class="history-actions"><button type="button" class="channel-history-use" data-index="${index}">Usar novamente</button></div></article>`).join("")}</div>`;
+  document.querySelectorAll(".channel-history-use").forEach(button => button.addEventListener("click", function () {
+    const item = getHistory()[Number(this.dataset.index)];
+    if (!item) return;
+    topic.value = item.topic; objective.value = item.objective; tone.value = item.tone;
+    channel.value = Object.keys(item.channels).length === Object.keys(channelNames).length ? "todos" : Object.keys(item.channels)[0];
+    contentResult.innerHTML = `<div class="results-grid">${Object.entries(item.channels).map(([key, text]) => renderChannelCard(key, text, item.id)).join("")}</div>`;
+    bindChannelActions();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }));
+  document.getElementById("clearChannelHistory").addEventListener("click", function () { if (confirm("Deseja realmente apagar todo o histórico de conteúdos?")) { localStorage.removeItem(HISTORY_KEY); renderHistory(); } });
 }
 
 generateContent.addEventListener("click", async () => {
@@ -45,7 +76,14 @@ generateContent.addEventListener("click", async () => {
   contentResult.innerHTML = `<div class="result-card"><h3>Gerando conteúdo...</h3><p>Preparando uma demonstração para o canal escolhido.</p></div>`;
   await new Promise(resolve => setTimeout(resolve, 500));
   const selectedChannels = channel.value === "todos" ? Object.keys(channelNames) : [channel.value];
-  contentResult.innerHTML = `<div class="results-grid">${selectedChannels.map(key => renderChannelCard(key, demoFormats[key](topicValue))).join("")}</div>`;
-  bindChannelActions();
+  const channels = Object.fromEntries(selectedChannels.map(key => [key, demoFormats[key](topicValue)]));
+  const historyId = Date.now();
+  addToHistory(channels);
+  const historyEntry = getHistory()[0];
+  historyEntry.id = historyId; saveHistory(getHistory());
+  contentResult.innerHTML = `<div class="results-grid">${Object.entries(channels).map(([key, text]) => renderChannelCard(key, text, historyId)).join("")}</div>`;
+  bindChannelActions(); renderHistory();
   generateContent.disabled = false; generateContent.textContent = "Gerar conteúdo";
 });
+
+renderHistory();
