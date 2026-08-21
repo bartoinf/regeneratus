@@ -6,74 +6,36 @@
   <title>Ferramentas | Regeneratus</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-
   <header>
-    <h1>Regeneratus</h1>
+    <div class="site-nav">
+      <a class="brand" href="index.html">Regeneratus</a>
+      <nav aria-label="Navegação principal">
+        <a href="index.html">Início</a>
+        <a href="index.html#ferramentas">Ferramentas</a>
+        <a href="ferramentas.html">Gerador de Textos</a>
+        <a href="redes-canais.html">Redes e Canais</a>
+      </nav>
+    </div>
     <p>Ferramentas digitais para transformar ideias em resultados.</p>
   </header>
-
   <main>
     <section class="generator">
       <h2>Gerador de Textos</h2>
-
-      <p>
-        Configure seu conteúdo e gere uma primeira versão em poucos segundos.
-      </p>
-
+      <p>Configure seu conteúdo e gere uma primeira versão em poucos segundos.</p>
       <label for="textType">Tipo de texto</label>
-
-      <select id="textType">
-        <option value="">Selecione uma opção</option>
-        <option value="produto">Descrição de produto</option>
-        <option value="anuncio">Anúncio</option>
-        <option value="social">Post para redes sociais</option>
-        <option value="email">E-mail profissional</option>
-      </select>
-
+      <select id="textType"><option value="">Selecione uma opção</option><option value="produto">Descrição de produto</option><option value="anuncio">Anúncio</option><option value="social">Post para redes sociais</option><option value="email">E-mail profissional</option></select>
       <label for="textTone">Tom de voz</label>
-
-      <select id="textTone">
-        <option value="profissional">Profissional</option>
-        <option value="amigavel">Amigável</option>
-        <option value="persuasivo">Persuasivo</option>
-        <option value="criativo">Criativo</option>
-      </select>
-
+      <select id="textTone"><option value="profissional">Profissional</option><option value="amigavel">Amigável</option><option value="persuasivo">Persuasivo</option><option value="criativo">Criativo</option></select>
       <label for="textLength">Tamanho do texto</label>
-
-      <select id="textLength">
-        <option value="curto">Curto</option>
-        <option value="medio" selected>Médio</option>
-        <option value="longo">Longo</option>
-      </select>
-
+      <select id="textLength"><option value="curto">Curto</option><option value="medio" selected>Médio</option><option value="longo">Longo</option></select>
       <label for="textTopic">Sobre o que é o texto?</label>
-
-      <textarea
-        id="textTopic"
-        rows="5"
-        placeholder="Ex.: um relógio inteligente para pessoas que praticam esportes..."
-      ></textarea>
-
-      <button class="button" id="generateButton" type="button">
-        Gerar texto
-      </button>
-
-      <div id="result" class="result">
-        <h3>Seu texto aparecerá aqui</h3>
-        <p>
-          Preencha os campos acima e clique em "Gerar texto".
-        </p>
-      </div>
+      <textarea id="textTopic" rows="5" placeholder="Ex.: um relógio inteligente para pessoas que praticam esportes..."></textarea>
+      <button class="button" id="generateButton" type="button">Gerar texto</button>
+      <div id="result" class="result"><h3>Seu texto aparecerá aqui</h3><p>Preencha os campos acima e clique em "Gerar texto".</p></div>
     </section>
   </main>
-
-  <footer>
-    © 2026 Regeneratus. Todos os direitos reservados.
-  </footer>
-
+  <footer>© 2026 Regeneratus. Todos os direitos reservados.</footer>
   <script src="js/app.js"></script>
 </body>
 </html>
