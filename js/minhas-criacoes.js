@@ -16,9 +16,7 @@ function escapeHtml(value) {
   return div.innerHTML;
 }
 
-function formatDate(value) {
-  return value || "Data não informada";
-}
+function formatDate(value) { return value || "Data não informada"; }
 
 function collectRecent() {
   const text = read(TEXT_HISTORY_KEY).map(item => ({
@@ -28,7 +26,6 @@ function collectRecent() {
     content: item.text || item.content || item.generatedText || "",
     raw: item
   }));
-
   const channels = read(CHANNEL_HISTORY_KEY).map(item => ({
     kind: "Redes e Canais",
     title: item.topic || "Conteúdo para canais",
@@ -36,7 +33,6 @@ function collectRecent() {
     content: Object.entries(item.channels || {}).map(([key, value]) => `${key}: ${value}`).join("\n\n"),
     raw: item
   }));
-
   return [...text, ...channels].sort((a, b) => String(b.date || "").localeCompare(String(a.date || ""))).slice(0, 20);
 }
 
@@ -48,7 +44,6 @@ function collectFavorites() {
     content: item.text || item.content || item.generatedText || "",
     raw: item
   }));
-
   const channels = read(CHANNEL_FAVORITES_KEY).map(item => ({
     kind: `Favorito · ${item.channel || "Canal"}`,
     title: item.topic || "Conteúdo favorito",
@@ -56,27 +51,37 @@ function collectFavorites() {
     content: item.text || "",
     raw: item
   }));
-
   return [...text, ...channels].sort((a, b) => String(b.date || "").localeCompare(String(a.date || ""))).slice(0, 20);
+}
+
+function storageStatus() {
+  const counts = {
+    textHistory: read(TEXT_HISTORY_KEY).length,
+    textFavorites: read(TEXT_FAVORITES_KEY).length,
+    channelHistory: read(CHANNEL_HISTORY_KEY).length,
+    channelFavorites: read(CHANNEL_FAVORITES_KEY).length
+  };
+  return counts;
 }
 
 function render(items, emptyMessage) {
   if (!items.length) {
-    content.innerHTML = `<div class="result-card"><h3>Nada por aqui ainda</h3><p>${emptyMessage}</p></div>`;
+    const counts = storageStatus();
+    const hasAny = Object.values(counts).some(Number);
+    const detail = hasAny
+      ? "Há dados salvos neste navegador, mas nenhum item corresponde à aba selecionada."
+      : "O painel está no mesmo navegador, mas não encontrou dados salvos neste endereço. Se você criou os conteúdos em outro endereço (por exemplo, localhost e Vercel), o navegador mantém armazenamentos separados.";
+    content.innerHTML = `<div class="result-card"><h3>Nada por aqui ainda</h3><p>${emptyMessage}</p><p class="edit-hint">${detail}</p><button type="button" id="refreshCreations" class="button secondary-button">Atualizar painel</button></div>`;
+    document.getElementById("refreshCreations").addEventListener("click", () => renderTab(document.querySelector(".creation-tab.active")?.dataset.tab || "recentes"));
     return;
   }
 
   content.innerHTML = `<div class="creation-summary"><strong>${items.length}</strong><span>criação(ões) encontrada(s)</span></div><div class="creations-list">${items.map((item, index) => `
     <article class="creation-item">
-      <div class="creation-item-header">
-        <span class="creation-kind">${escapeHtml(item.kind)}</span>
-        <small>${escapeHtml(formatDate(item.date))}</small>
-      </div>
+      <div class="creation-item-header"><span class="creation-kind">${escapeHtml(item.kind)}</span><small>${escapeHtml(formatDate(item.date))}</small></div>
       <h3>${escapeHtml(item.title)}</h3>
       <p class="creation-preview">${escapeHtml(item.content).replace(/\n/g, "<br>")}</p>
-      <div class="creation-actions">
-        <button type="button" class="button secondary-button copy-creation" data-index="${index}">Copiar</button>
-      </div>
+      <div class="creation-actions"><button type="button" class="button secondary-button copy-creation" data-index="${index}">Copiar</button></div>
     </article>`).join("")}</div>`;
 
   content.querySelectorAll(".copy-creation").forEach(button => button.addEventListener("click", async () => {
@@ -84,13 +89,8 @@ function render(items, emptyMessage) {
     const itemsNow = currentTab === "favoritos" ? collectFavorites() : collectRecent();
     const item = itemsNow[Number(button.dataset.index)];
     if (!item) return;
-    try {
-      await navigator.clipboard.writeText(item.content);
-      button.textContent = "Copiado!";
-      setTimeout(() => button.textContent = "Copiar", 1500);
-    } catch (error) {
-      alert("Não foi possível copiar o conteúdo.");
-    }
+    try { await navigator.clipboard.writeText(item.content); button.textContent = "Copiado!"; setTimeout(() => button.textContent = "Copiar", 1500); }
+    catch (error) { alert("Não foi possível copiar o conteúdo."); }
   }));
 }
 
@@ -104,5 +104,7 @@ tabs.forEach(tab => tab.addEventListener("click", () => {
   tab.classList.add("active");
   renderTab(tab.dataset.tab);
 }));
+
+window.addEventListener("storage", () => renderTab(document.querySelector(".creation-tab.active")?.dataset.tab || "recentes"));
 
 renderTab("recentes");
