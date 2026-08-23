@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Títulos | Regeneratus</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="site-nav">
+      <a class="brand" href="index.html">Regeneratus</a>
+      <nav aria-label="Navegação principal">
+        <a href="index.html">Início</a>
+        <a href="index.html#ferramentas">Ferramentas</a>
+        <a href="ferramentas.html">Gerador de Textos</a>
+        <a href="redes-canais.html">Redes e Canais</a>
+        <a href="minhas-criacoes.html">Minhas Criações</a>
+      </nav>
+    </div>
+    <p>Ferramentas digitais para transformar ideias em resultados.</p>
+  </header>
+
+  <main>
+    <section class="container">
+      <div class="tool-card">
+        <h1>Gerador de Títulos e Headlines</h1>
+        <p class="tool-description">Crie opções de títulos para anúncios, posts, páginas, produtos e conteúdos.</p>
+
+        <div class="form-group"><label for="titleType">Onde será usado?</label><select id="titleType"><option value="anuncio">Anúncio</option><option value="post">Post para redes sociais</option><option value="produto">Produto ou oferta</option><option value="pagina">Página ou landing page</option><option value="artigo">Artigo ou conteúdo</option></select></div>
+        <div class="form-group"><label for="titleTone">Tom</label><select id="titleTone"><option value="persuasivo">Persuasivo</option><option value="profissional">Profissional</option><option value="criativo">Criativo</option><option value="direto">Direto</option><option value="curioso">Instigante</option></select></div>
+        <div class="form-group"><label for="titleObjective">Objetivo</label><select id="titleObjective"><option value="atrair atenção">Atrair atenção</option><option value="gerar cliques">Gerar cliques</option><option value="vender">Vender</option><option value="gerar engajamento">Gerar engajamento</option><option value="informar">Informar</option></select></div>
+        <div class="form-group"><label for="titleTopic">Tema ou oferta</label><textarea id="titleTopic" rows="5" placeholder="Ex.: ferramenta digital para pequenos negócios economizarem tempo"></textarea></div>
+        <button type="button" id="generateTitles" class="button">Gerar títulos</button>
+        <div id="titleResult" class="result"></div>
+      </div>
+    </section>
+  </main>
+  <footer>© 2026 Regeneratus. Todos os direitos reservados.</footer>
+  <script src="js/titulos.js"></script>
+</body>
+</html>
