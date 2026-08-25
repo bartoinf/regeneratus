@@ -5,31 +5,33 @@ const TEXT_HISTORY_KEY = "regeneratus_text_history";
 const TEXT_FAVORITES_KEY = "regeneratus_text_favorites";
 const CHANNEL_HISTORY_KEY = "regeneratus_channels_history";
 const CHANNEL_FAVORITES_KEY = "regeneratus_channels_favorites";
+const TITLE_HISTORY_KEY = "regeneratus_titles_history";
+const TITLE_FAVORITES_KEY = "regeneratus_titles_favorites";
 
-function read(key) {
-  try { return JSON.parse(localStorage.getItem(key)) || []; } catch (error) { return []; }
-}
+function read(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch (error) { return []; } }
 function escapeHtml(value) { const div = document.createElement("div"); div.textContent = String(value ?? ""); return div.innerHTML; }
 function formatDate(value) { return value || "Data não informada"; }
 
 function collectRecent() {
   const text = read(TEXT_HISTORY_KEY).map(item => ({ kind: "Gerador de Textos", title: item.topic || item.title || "Texto gerado", date: item.createdAt || item.date, content: item.text || item.content || item.generatedText || "" }));
   const channels = read(CHANNEL_HISTORY_KEY).map(item => ({ kind: "Redes e Canais", title: item.topic || "Conteúdo para canais", date: item.createdAt, content: Object.entries(item.channels || {}).map(([key, value]) => `${key}: ${value}`).join("\n\n") }));
-  return [...text, ...channels].sort((a, b) => String(b.date || "").localeCompare(String(a.date || ""))).slice(0, 20);
+  const titles = read(TITLE_HISTORY_KEY).map(item => ({ kind: "Gerador de Títulos", title: item.topic || "Títulos gerados", date: item.createdAt, content: (item.titles || []).join("\n\n") }));
+  return [...text, ...channels, ...titles].sort((a, b) => String(b.date || "").localeCompare(String(a.date || ""))).slice(0, 20);
 }
 
 function collectFavorites() {
   const text = read(TEXT_FAVORITES_KEY).map(item => ({ kind: "Gerador de Textos", title: item.topic || item.title || "Texto favorito", date: item.createdAt || item.date, content: item.text || item.content || item.generatedText || "" }));
   const channels = read(CHANNEL_FAVORITES_KEY).map(item => ({ kind: `Favorito · ${item.channel || "Canal"}`, title: item.topic || "Conteúdo favorito", date: item.createdAt, content: item.text || "" }));
-  return [...text, ...channels].sort((a, b) => String(b.date || "").localeCompare(String(a.date || ""))).slice(0, 20);
+  const titles = read(TITLE_FAVORITES_KEY).map(item => ({ kind: "Gerador de Títulos", title: item.title || "Título favorito", date: item.createdAt, content: item.title || "" }));
+  return [...text, ...channels, ...titles].sort((a, b) => String(b.date || "").localeCompare(String(a.date || ""))).slice(0, 20);
 }
 
 function storageStatus() {
-  return { textHistory: read(TEXT_HISTORY_KEY).length, textFavorites: read(TEXT_FAVORITES_KEY).length, channelHistory: read(CHANNEL_HISTORY_KEY).length, channelFavorites: read(CHANNEL_FAVORITES_KEY).length };
+  return { textHistory: read(TEXT_HISTORY_KEY).length, textFavorites: read(TEXT_FAVORITES_KEY).length, channelHistory: read(CHANNEL_HISTORY_KEY).length, channelFavorites: read(CHANNEL_FAVORITES_KEY).length, titleHistory: read(TITLE_HISTORY_KEY).length, titleFavorites: read(TITLE_FAVORITES_KEY).length };
 }
 
 function renderFileProtocolNotice() {
-  content.innerHTML = `<div class="result-card"><h3>Abra o Regeneratus por um servidor local</h3><p>O painel precisa que as páginas compartilhem a mesma origem para enxergar o histórico e os favoritos.</p><p class="edit-hint">Você está abrindo esta página diretamente como arquivo (<strong>file://</strong>). Nesse modo, o navegador pode separar o armazenamento de cada página.</p><div class="history-item"><p><strong>No terminal, dentro da pasta do projeto, execute:</strong></p><p><code>python3 -m http.server 5500</code></p><p>Depois abra <strong>http://localhost:5500/</strong> e use o Regeneratus por esse endereço. A partir daí, Gerador de Textos, Redes e Canais e Minhas Criações compartilharão o mesmo armazenamento.</p></div></div>`;
+  content.innerHTML = `<div class="result-card"><h3>Abra o Regeneratus por um servidor local</h3><p>O painel precisa que as páginas compartilhem a mesma origem para enxergar o histórico e os favoritos.</p><p class="edit-hint">Você está abrindo esta página diretamente como arquivo (<strong>file://</strong>). Nesse modo, o navegador pode separar o armazenamento de cada página.</p><div class="history-item"><p><strong>No terminal, dentro da pasta do projeto, execute:</strong></p><p><code>python3 -m http.server 5500</code></p><p>Depois abra <strong>http://localhost:5500/</strong> e use o Regeneratus por esse endereço. A partir daí, todas as ferramentas e Minhas Criações compartilharão o mesmo armazenamento.</p></div></div>`;
 }
 
 function render(items, emptyMessage) {
@@ -49,7 +51,6 @@ function render(items, emptyMessage) {
 }
 
 function renderTab(tab) { render(tab === "favoritos" ? collectFavorites() : collectRecent(), tab === "favoritos" ? "Quando você favoritar um conteúdo, ele aparecerá aqui." : "Gere algum conteúdo no Regeneratus para começar seu painel."); }
-
 tabs.forEach(tab => tab.addEventListener("click", () => { tabs.forEach(item => item.classList.remove("active")); tab.classList.add("active"); renderTab(tab.dataset.tab); }));
 window.addEventListener("storage", () => renderTab(document.querySelector(".creation-tab.active")?.dataset.tab || "recentes"));
 renderTab("recentes");
