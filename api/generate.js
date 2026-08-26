@@ -2,6 +2,15 @@
 // OPENAI_API_KEY is stored securely in Vercel Environment Variables.
 
 export default async function handler(request, response) {
+  // Health check: safe to call without consuming OpenAI credits.
+  if (request.method === "GET") {
+    return response.status(200).json({
+      ok: true,
+      service: "regeneratus-generate",
+      openai_configured: Boolean(process.env.OPENAI_API_KEY)
+    });
+  }
+
   if (request.method !== "POST") {
     return response.status(405).json({
       error: "Método não permitido."
@@ -20,8 +29,8 @@ export default async function handler(request, response) {
     const apiKey = process.env.OPENAI_API_KEY;
 
     if (!apiKey) {
-      return response.status(500).json({
-        error: "A chave da API não está configurada no servidor."
+      return response.status(503).json({
+        error: "A geração por IA está desativada: a chave da API não está configurada no servidor."
       });
     }
 
