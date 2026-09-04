@@ -27,5 +27,14 @@
     remaining() { return Math.max(0, LIMIT - used()); },
     update: updateButton
   };
+  if (window.RegeneratusGenerator) {
+    const originalGenerate = window.RegeneratusGenerator.generate;
+    window.RegeneratusGenerator.generate = async function (request) {
+      if (used() >= LIMIT) throw new Error("Seu teste gratuito terminou. Conheça o Regeneratus Pro para continuar.");
+      const value = await originalGenerate(request);
+      if (request.kind === "text") window.RegeneratusQuota.consume();
+      return value;
+    };
+  }
   document.addEventListener("DOMContentLoaded", updateButton);
 })();
