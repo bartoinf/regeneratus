@@ -39,8 +39,8 @@
         <div class="price">R$ 19,90<span>/mês</span></div>
         <p>Para profissionais, criadores e pequenos negócios.</p>
         <ul><li>Gerações com IA para uso contínuo</li><li>Todos os recursos do teste</li><li>Novas ferramentas à medida que forem lançadas</li><li>Prioridade nas melhorias do produto</li></ul>
-        <a class="button" id="proButton" href="#">Quero o Pro</a>
-        <small class="payment-note">Pagamento online será ativado nesta etapa do lançamento.</small>
+        <button class="button" id="proButton" type="button">Quero o Pro</button>
+        <small class="payment-note" id="paymentStatus">Checkout seguro. Você será direcionado ao Stripe.</small>
       </article>
       <article class="price-card">
         <span class="price-label">NEGÓCIOS</span>
@@ -53,10 +53,29 @@
     </section>
     <section class="commercial-note" id="contato">
       <h3>Estamos abrindo os primeiros clientes</h3>
-      <p>O Regeneratus está entrando em fase comercial. Se você quer usar a plataforma profissionalmente ou oferecer a solução para sua equipe, fale conosco.</p>
-      <p><strong>Próxima etapa:</strong> ativar o checkout e conectar o pagamento aos planos.</p>
+      <p>Começamos simples para colocar o Regeneratus no mercado rapidamente. O Pro custa R$ 19,90/mês e o checkout será ativado assim que a configuração comercial do Stripe estiver concluída.</p>
+      <p><strong>Próximo passo:</strong> configurar o preço do Pro no Stripe e adicionar as duas variáveis secretas no Vercel.</p>
     </section>
   </main>
   <footer>© 2026 Regeneratus. Todos os direitos reservados.</footer>
+  <script>
+    const button = document.getElementById('proButton');
+    const status = document.getElementById('paymentStatus');
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      button.textContent = 'Abrindo checkout…';
+      status.textContent = 'Conectando ao checkout seguro…';
+      try {
+        const response = await fetch('/api/create-checkout', { method: 'POST' });
+        const data = await response.json();
+        if (!response.ok || !data.url) throw new Error(data.error || 'Checkout indisponível.');
+        window.location.href = data.url;
+      } catch (error) {
+        button.disabled = false;
+        button.textContent = 'Quero o Pro';
+        status.textContent = error.message || 'Não foi possível abrir o checkout agora.';
+      }
+    });
+  </script>
 </body>
 </html>
