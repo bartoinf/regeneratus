@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ferramentas | Regeneratus</title>
+  <title>Gerador de Textos com IA | Regeneratus</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,15 +14,18 @@
         <a href="index.html">Início</a>
         <a href="index.html#ferramentas">Ferramentas</a>
         <a href="ferramentas.html">Gerador de Textos</a>
+        <a href="precos.html">Planos</a>
         <a href="redes-canais.html">Redes e Canais</a>
       </nav>
     </div>
-    <p>Ferramentas digitais para transformar ideias em resultados.</p>
+    <p>Conteúdo melhor, em menos tempo.</p>
   </header>
   <main>
     <section class="generator">
-      <h2>Gerador de Textos</h2>
-      <p>Configure seu conteúdo e gere uma primeira versão em poucos segundos.</p>
+      <span class="hero-badge">Teste grátis • IA do Regeneratus</span>
+      <h2>Crie textos prontos para usar</h2>
+      <p>Escolha o objetivo, o tom e o tamanho. A IA transforma sua ideia em um texto original para você editar e publicar.</p>
+      <div class="free-counter" id="freeCounter">5 gerações gratuitas restantes</div>
       <label for="textType">Tipo de texto</label>
       <select id="textType"><option value="">Selecione uma opção</option><option value="produto">Descrição de produto</option><option value="anuncio">Anúncio</option><option value="social">Post para redes sociais</option><option value="email">E-mail profissional</option></select>
       <label for="textTone">Tom de voz</label>
@@ -30,13 +33,15 @@
       <label for="textLength">Tamanho do texto</label>
       <select id="textLength"><option value="curto">Curto</option><option value="medio" selected>Médio</option><option value="longo">Longo</option></select>
       <label for="textTopic">Sobre o que é o texto?</label>
-      <textarea id="textTopic" rows="5" placeholder="Ex.: um relógio inteligente para pessoas que praticam esportes..."></textarea>
-      <button class="button" id="generateButton" type="button">Gerar texto</button>
-      <div id="result" class="result"><h3>Seu texto aparecerá aqui</h3><p>Preencha os campos acima e clique em "Gerar texto".</p></div>
+      <textarea id="textTopic" rows="5" placeholder="Ex.: uma promoção de academia para novos alunos..."></textarea>
+      <button class="button" id="generateButton" type="button">Gerar texto com IA</button>
+      <div class="mini-cta"><strong>Quer criar sem limite?</strong> Conheça o <a href="precos.html">Regeneratus Pro</a>.</div>
+      <div id="result" class="result"><h3>Seu texto aparecerá aqui</h3><p>Você pode editar, copiar e favoritar o resultado.</p></div>
     </section>
   </main>
   <footer>© 2026 Regeneratus. Todos os direitos reservados.</footer>
   <script src="js/generator.js"></script>
+  <script src="js/quota.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
