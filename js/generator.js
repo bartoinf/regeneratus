@@ -1,5 +1,5 @@
 /* Regeneratus — motor compartilhado de geração.
- * Modo atual: local. Modo IA: preparado para /api/generate.
+ * Modo atual: IA por padrão; o modo local continua disponível como fallback manual.
  */
 (function (global) {
   const channelNames = { instagram: "Instagram", facebook: "Facebook", linkedin: "LinkedIn", x: "X/Twitter", tiktok: "TikTok", whatsapp: "WhatsApp" };
@@ -25,16 +25,15 @@
     const byChannel = { instagram: `Legenda para Instagram: ${subject}. Destaque o principal benefício de forma visual, ${tone}, e convide o público a conhecer mais. Objetivo: ${objective}. ✨`, facebook: `Post para Facebook: ${subject}. Apresente a proposta de maneira ${tone}, aproximando a marca do público e reforçando o objetivo de ${objective}.`, linkedin: `Post para LinkedIn: ${subject}. Uma abordagem ${tone}, orientada a resultados e relevante para profissionais, com foco em ${objective}.`, x: `Post para X/Twitter: ${subject}. Uma mensagem ${tone}, direta e fácil de compartilhar, com foco em ${objective}.`, tiktok: `Ideia para TikTok: mostre ${subject} em um vídeo curto, ${tone} e dinâmico, começando pelo benefício principal e terminando com um convite à ação. Objetivo: ${objective}.`, whatsapp: `Mensagem para WhatsApp: Olá! Quero compartilhar uma novidade sobre ${subject}. A proposta é apresentar o benefício de forma ${tone} e convidar você a conhecer melhor. Objetivo: ${objective}.` };
     return byChannel[channel] || `Conteúdo para ${name}: ${subject}. Comunicação ${tone}, com foco em ${objective}.`;
   }
-  function aiEnabled() { return localStorage.getItem(AI_MODE_KEY) === "enabled"; }
+  function aiEnabled() { return localStorage.getItem(AI_MODE_KEY) !== "disabled"; }
   async function aiGenerate(request) {
     const response = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(request) });
     let data = null; try { data = await response.json(); } catch (_) {}
     if (!response.ok) throw new Error(data?.error || `Servidor retornou ${response.status}.`);
-    if (request.kind === "channels") return data.channels;
-    return data.result;
+    return data.text || data.result;
   }
   async function generate(request) {
-    if (aiEnabled()) return aiGenerate(request);
+    if (aiEnabled() && request.kind === "text") return aiGenerate(request);
     if (request.kind === "titles") return localTitle(request);
     if (request.kind === "text") return localText(request);
     if (request.kind === "channel") return localChannel(request);
